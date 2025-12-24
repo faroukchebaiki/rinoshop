@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum ProductStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model User {
+  id         String   @id @default(uuid()) @db.Uuid
+  email      String   @unique
+  role       UserRole @default(USER)
+  neonAuthId String?  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  products     Product[]
+  productFiles ProductFile[]
+  orders       Order[]
+  media        Media[]
+}
+
+model Product {
+  id              String        @id @default(uuid()) @db.Uuid
+  userId          String        @db.Uuid
+  user            User          @relation(fields: [userId], references: [id])
+  name            String
+  description     String?
+  price           Float
+  category        String
+  approvedForSale ProductStatus @default(PENDING)
+  priceId         String?
+  stripeId        String?
+  productFileId   String        @unique @db.Uuid
+  productFile     ProductFile   @relation("ProductFile", fields: [productFileId], references: [id])
+  images          ProductImage[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  orderItems OrderItem[]
+}
+
+model ProductImage {
+  id        String  @id @default(uuid()) @db.Uuid
+  productId String  @db.Uuid
+  mediaId   String  @db.Uuid
+  sortOrder Int     @default(0)
+  product   Product @relation(fields: [productId], references: [id])
+  media     Media   @relation(fields: [mediaId], references: [id])
+
+  @@unique([productId, mediaId])
+}
+
+model ProductFile {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  url       String?
+  filename  String?
+  mimeType  String?
+  filesize  Int?
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product? @relation("ProductFile")
+}
+
+model Media {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  url       String?
+  filename  String?
+  mimeType  String?
+  filesize  Int?
+  width     Int?
+  height    Int?
+  sizes     Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productImages ProductImage[]
+}
+
+model Order {
+  id        String      @id @default(uuid()) @db.Uuid
+  userId    String      @db.Uuid
+  user      User        @relation(fields: [userId], references: [id])
+  isPaid    Boolean     @default(false)
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(uuid()) @db.Uuid
+  orderId   String  @db.Uuid
+  productId String  @db.Uuid
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+}
