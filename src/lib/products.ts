@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/client'
 import type { StoreProduct } from '@/types/product'
 
 export const productSelect = {

@@ -4,7 +4,7 @@ import { QueryValidator } from '../lib/validators/query-validator'
 import { paymentRouter } from './payment-router'
 import { prisma } from '@/lib/db'
 import { mapProductRecord, productSelect } from '@/lib/products'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/client'
 
 export const appRouter = router({
   payment: paymentRouter,
@@ -18,9 +18,9 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const { query, cursor } = input
-      const { sort, limit, category } = query
-      const page = cursor || 1
+      const { query, cursor, limit } = input
+      const { sort, category } = query
+      const page = cursor ?? 1
       const skip = (page - 1) * limit
 
       const where: Prisma.ProductWhereInput = {

@@ -33,21 +33,21 @@ model User {
 }
 
 model Product {
-  id              String        @id @default(uuid()) @db.Uuid
-  userId          String        @db.Uuid
-  user            User          @relation(fields: [userId], references: [id])
+  id              String         @id @default(uuid()) @db.Uuid
+  userId          String         @db.Uuid
+  user            User           @relation(fields: [userId], references: [id])
   name            String
   description     String?
   price           Float
   category        String
-  approvedForSale ProductStatus @default(PENDING)
+  approvedForSale ProductStatus  @default(PENDING)
   priceId         String?
   stripeId        String?
-  productFileId   String        @unique @db.Uuid
-  productFile     ProductFile   @relation("ProductFile", fields: [productFileId], references: [id])
+  productFileId   String         @unique @db.Uuid
+  productFile     ProductFile    @relation("ProductFile", fields: [productFileId], references: [id])
   images          ProductImage[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   orderItems OrderItem[]
 }

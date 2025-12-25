@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import type { User } from '@prisma/client'
+import type { User } from '@/generated/client'
 import { neonAuth } from '@neondatabase/auth/next/server'
 import { prisma } from '@/lib/db'
 import {
