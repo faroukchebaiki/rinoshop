@@ -4,7 +4,7 @@ import { QueryValidator } from '../lib/validators/query-validator'
 import { paymentRouter } from './payment-router'
 import { prisma } from '@/lib/db'
 import { mapProductRecord, productSelect } from '@/lib/products'
-import type { Prisma } from '@/generated/client'
+import type { Prisma } from '../generated/client'
 
 export const appRouter = router({
   payment: paymentRouter,

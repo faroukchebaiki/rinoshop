@@ -7,7 +7,7 @@ import { Resend } from 'resend'
 import { ReceiptEmailHtml } from './components/emails/ReceiptEmail'
 import { mapProductRecord, productSelect } from './lib/products'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy')
 
 type OrderMetadata = {
   userId: string

@@ -1,14 +1,23 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
+        "jsx": "react-jsx",
         "module": "nodenext",
         "moduleResolution": "nodenext",
         "outDir": "dist",
         "noEmit": false
     },
     "include": [
-        "src/server.ts",
-        "src/next-utils.ts",
-        "src/server/**/*.ts"
+        "src/**/*.ts",
+        "src/**/*.tsx"
+    ],
+    "exclude": [
+        "src/app/**/*"
     ]
 }

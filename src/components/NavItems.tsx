@@ -28,7 +28,7 @@ const NavItems = () => {
 
   const navRef = useRef<HTMLDivElement | null>(null)
 
-  useOnClickOutside(navRef, () => setActiveIndex(null))
+  useOnClickOutside(navRef as any, () => setActiveIndex(null))
 
   return (
     <div className='flex gap-4 h-full' ref={navRef}>
