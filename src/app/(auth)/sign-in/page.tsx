@@ -20,9 +20,17 @@ import {
 import { toast } from 'sonner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 
 const Page = () => {
+  return (
+    <Suspense fallback={<Loader2 className='mx-auto h-8 w-8 animate-spin text-zinc-300' />}>
+      <SignInContent />
+    </Suspense>
+  )
+}
+
+const SignInContent = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const isSeller = searchParams.get('as') === 'seller'

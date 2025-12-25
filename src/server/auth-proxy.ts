@@ -5,12 +5,12 @@ export const authProxyHandler = async (
     req: Request,
     res: Response
 ) => {
-    const authUrl = process.env.NEON_AUTH_BASE_URL
+    const authUrl = process.env.NEON_AUTH_URL
 
     if (!authUrl) {
         return res
             .status(500)
-            .json({ error: 'NEON_AUTH_BASE_URL is missing' })
+            .json({ error: 'NEON_AUTH_URL is missing' })
     }
 
     const url = new URL(

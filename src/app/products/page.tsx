@@ -12,11 +12,14 @@ const parse = (param: Param) => {
   return typeof param === 'string' ? param : undefined
 }
 
-const ProductsPage = ({
+const ProductsPage = async ({
   searchParams,
-}: ProductsPageProps) => {
-  const sort = parse(searchParams.sort)
-  const category = parse(searchParams.category)
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) => {
+  const params = await searchParams
+  const sort = parse(params.sort)
+  const category = parse(params.category)
 
   const label = PRODUCT_CATEGORIES.find(
     ({ value }) => value === category

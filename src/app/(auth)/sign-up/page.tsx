@@ -45,6 +45,7 @@ const Page = () => {
     const { error } = await authClient.signUp.email({
       email,
       password,
+      name: email.split('@')[0],
     })
 
     setIsLoading(false)

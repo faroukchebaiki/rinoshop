@@ -7,9 +7,8 @@
                 "./src/*"
             ]
         },
-        "jsx": "react-jsx",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "esnext",
+        "moduleResolution": "bundler",
         "outDir": "dist",
         "noEmit": false
     },

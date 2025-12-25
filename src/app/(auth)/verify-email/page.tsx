@@ -7,9 +7,14 @@ interface PageProps {
   }
 }
 
-const VerifyEmailPage = ({ searchParams }: PageProps) => {
-  const token = searchParams.token
-  const toEmail = searchParams.to
+const VerifyEmailPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) => {
+  const params = await searchParams
+  const token = params.token
+  const toEmail = params.to
 
   return (
     <div className='container relative flex pt-20 flex-col items-center justify-center lg:px-0'>

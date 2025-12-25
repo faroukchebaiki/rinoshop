@@ -21,8 +21,12 @@ const BREADCRUMBS = [
   { id: 2, name: 'Products', href: '/products' },
 ]
 
-const Page = async ({ params }: PageProps) => {
-  const { productId } = params
+const Page = async ({
+  params,
+}: {
+  params: Promise<{ productId: string }>
+}) => {
+  const { productId } = await params
   const productRecord = await prisma.product.findFirst({
     where: {
       id: productId,

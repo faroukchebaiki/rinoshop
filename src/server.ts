@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
-import nextBuild from 'next/dist/build'
+import nextBuild from 'next/dist/build/index.js'
 import path from 'path'
 import { parse } from 'url'
 import { nextApp, nextHandler } from './next-utils'
@@ -18,7 +18,8 @@ const start = async () => {
             console.log('Next.js is building for production')
 
             // @ts-expect-error
-            await nextBuild(path.join(__dirname, '../'))
+            const build = nextBuild.default || nextBuild
+            await build(path.join(__dirname, '../'))
 
             process.exit()
         })

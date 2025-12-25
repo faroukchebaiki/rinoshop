@@ -33,10 +33,16 @@ export const fetchNeonSession = async ({
 }): Promise<
   NeonAuthSession & { setCookie: string | null }
 > => {
-  const baseUrl = process.env.NEON_AUTH_BASE_URL
+  const baseUrl = process.env.NEON_AUTH_URL
 
   if (!baseUrl) {
-    throw new Error('NEON_AUTH_BASE_URL is missing')
+    throw new Error('NEON_AUTH_URL is missing')
+  }
+
+  try {
+    new URL(baseUrl)
+  } catch (e) {
+    throw new Error(`Invalid NEON_AUTH_URL: "${baseUrl}"`)
   }
 
   const cookies = extractNeonAuthCookies(cookieHeader)

@@ -1,0 +1,34 @@
+
+> rinoshop@0.1.0 start /home/farouk/Documents/rinoshop
+> cross-env NODE_ENV=production node dist/server.cjs
+
+Next.js started
+Next.js App URL: http://localhost:3000
+⨯ TypeError: Invalid URL
+    at kZ (.next/server/chunks/ssr/_0c0dfbf8._.js:31:182409)
+    at async kY (.next/server/chunks/ssr/_0c0dfbf8._.js:31:182238)
+    at async k0 (.next/server/chunks/ssr/_0c0dfbf8._.js:31:184236)
+    at async l (.next/server/chunks/ssr/[root-of-the-server]__ff348790._.js:1:19430) {
+  code: 'ERR_INVALID_URL',
+  input: 'get-session',
+  digest: '3557247260'
+}
+⨯ TypeError: Invalid URL
+    at kZ (.next/server/chunks/ssr/_0c0dfbf8._.js:31:182409)
+    at async kY (.next/server/chunks/ssr/_0c0dfbf8._.js:31:182238)
+    at async k0 (.next/server/chunks/ssr/_0c0dfbf8._.js:31:184236)
+    at async l (.next/server/chunks/ssr/[root-of-the-server]__ff348790._.js:1:19430) {
+  code: 'ERR_INVALID_URL',
+  input: 'get-session',
+  digest: '3557247260'
+}
+⨯ TypeError: Invalid URL
+    at kZ (.next/server/chunks/ssr/_0c0dfbf8._.js:31:182409)
+    at async kY (.next/server/chunks/ssr/_0c0dfbf8._.js:31:182238)
+    at async k0 (.next/server/chunks/ssr/_0c0dfbf8._.js:31:184236)
+    at async l (.next/server/chunks/ssr/[root-of-the-server]__ff348790._.js:1:19430) {
+  code: 'ERR_INVALID_URL',
+  input: 'get-session',
+  digest: '3557247260'
+}
+ ELIFECYCLE  Command failed with exit code 1.
