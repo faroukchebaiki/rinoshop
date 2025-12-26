@@ -63,26 +63,43 @@ const applySetCookies = (
 
 // Ensures there's a matching Prisma user for the Neon Auth identity.
 const syncUser = async (authUser: NeonAuthUser) => {
-  if (!authUser.id) return null
+  if (!authUser.id || !authUser.email) return null
 
   const email = normalizeEmail(authUser.email)
   if (!email) return null
 
-  const existing = await prisma.user.findUnique({
+  // 1. Try to find by Neon Auth ID first (most reliable)
+  const existingByAuthId = await prisma.user.findUnique({
+    where: { neonAuthId: authUser.id },
+  })
+
+  if (existingByAuthId) {
+    // Update email if it changed in Neon Auth
+    if (existingByAuthId.email !== email) {
+      return prisma.user.update({
+        where: { id: existingByAuthId.id },
+        data: { email },
+      })
+    }
+    return existingByAuthId
+  }
+
+  // 2. Fallback: Find by email and link Neon Auth ID
+  const existingByEmail = await prisma.user.findUnique({
     where: { email },
   })
 
-  if (existing) {
-    if (existing.neonAuthId !== authUser.id) {
+  if (existingByEmail) {
+    if (existingByEmail.neonAuthId !== authUser.id) {
       return prisma.user.update({
-        where: { id: existing.id },
+        where: { id: existingByEmail.id },
         data: { neonAuthId: authUser.id },
       })
     }
-
-    return existing
+    return existingByEmail
   }
 
+  // 3. Create new user
   return prisma.user.create({
     data: {
       email,
