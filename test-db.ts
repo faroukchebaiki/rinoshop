@@ -1,14 +1,17 @@
 
 import { PrismaClient } from '@prisma/client'
 import { PrismaNeon } from '@prisma/adapter-neon'
-import { neonConfig } from '@neondatabase/serverless'
+import { Pool, neonConfig } from '@neondatabase/serverless'
 import ws from 'ws'
 import 'dotenv/config'
 
 neonConfig.webSocketConstructor = ws
 
 const connectionString = `${process.env.DATABASE_URL}`
-const adapter = new PrismaNeon({ connectionString })
+console.log(`Debug: DATABASE_URL exists? ${!!connectionString}`)
+// const adapter = new PrismaNeon({ connectionString })
+const pool = new Pool({ connectionString })
+const adapter = new PrismaNeon(pool)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
@@ -19,7 +22,7 @@ async function main() {
         const count = await prisma.user.count()
         console.log('User count:', count)
     } catch (e) {
-        console.error('DB Error:', e)
+        console.error('DB Error Full:', JSON.stringify(e, Object.getOwnPropertyNames(e), 2))
         process.exit(1)
     } finally {
         await prisma.$disconnect()
