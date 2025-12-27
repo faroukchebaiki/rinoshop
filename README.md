@@ -22,5 +22,3 @@ pnpm dev
 ## Environment
 Copy `.env.example` to `.env` and fill in values.
 
-## Notes
-Branding assets are placeholders and can be swapped later.
