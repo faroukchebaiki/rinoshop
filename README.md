@@ -19,6 +19,4 @@ pnpm install
 pnpm dev
 ```
 
-## Environment
-Copy `.env.example` to `.env` and fill in values.
 
