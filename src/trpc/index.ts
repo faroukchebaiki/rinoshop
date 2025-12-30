@@ -2,12 +2,16 @@ import { z } from 'zod'
 import { publicProcedure, router } from './trpc'
 import { QueryValidator } from '../lib/validators/query-validator'
 import { paymentRouter } from './payment-router'
+import { sellerRouter } from './seller-router'
+import { adminRouter } from './admin-router'
 import { prisma } from '@/lib/db'
 import { mapProductRecord, productSelect } from '@/lib/products'
 import type { Prisma } from '../generated/client'
 
 export const appRouter = router({
   payment: paymentRouter,
+  seller: sellerRouter,
+  admin: adminRouter,
 
   getInfiniteProducts: publicProcedure
     .input(

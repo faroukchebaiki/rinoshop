@@ -10,6 +10,18 @@ type UploadIntent = {
     pathname?: string
 }
 
+const resolveCallbackUrl = () => {
+    if (process.env.VERCEL_BLOB_CALLBACK_URL) {
+        return process.env.VERCEL_BLOB_CALLBACK_URL
+    }
+
+    if (process.env.NEXT_PUBLIC_SERVER_URL) {
+        return `${process.env.NEXT_PUBLIC_SERVER_URL}/api/blob/upload`
+    }
+
+    return undefined
+}
+
 const parsePayload = (payload: string | null) => {
     if (!payload) return {}
     try {
@@ -70,6 +82,7 @@ export const blobUploadHandler = async (
                     allowedContentTypes:
                         kind === 'media' ? ['image/*'] : undefined,
                     addRandomSuffix: true,
+                    callbackUrl: resolveCallbackUrl(),
                     tokenPayload: JSON.stringify({
                         kind,
                         productId: payload.productId ?? null,
@@ -99,16 +112,45 @@ export const blobUploadHandler = async (
                     })
 
                     if (payload.productId) {
+                        const sortOrder =
+                            await prisma.productImage.count({
+                                where: { productId: payload.productId },
+                            })
+
                         await prisma.productImage.create({
                             data: {
                                 productId: payload.productId,
                                 mediaId: media.id,
+                                sortOrder,
                             },
                         })
                     }
                 }
 
                 if (kind === 'product-file') {
+                    if (payload.productId) {
+                        const product =
+                            await prisma.product.findUnique({
+                                where: { id: payload.productId },
+                                select: { productFileId: true },
+                            })
+
+                        if (product?.productFileId) {
+                            await prisma.productFile.update({
+                                where: {
+                                    id: product.productFileId,
+                                },
+                                data: {
+                                    url: blob.url,
+                                    filename,
+                                    mimeType: blob.contentType ?? null,
+                                },
+                            })
+
+                            return
+                        }
+                    }
+
                     const productFile =
                         await prisma.productFile.create({
                             data: {
