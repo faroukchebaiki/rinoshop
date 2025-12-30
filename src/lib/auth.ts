@@ -1,3 +1,4 @@
+import './auth/neon-env'
 import type { Request, Response } from 'express'
 import type { User } from '../generated/client'
 import { neonAuth } from '@neondatabase/auth/next/server'
@@ -6,6 +7,7 @@ import {
   fetchNeonSession,
   type NeonAuthUser,
 } from './auth/neon-session'
+import { getNeonAuthConfig } from './auth/neon-config'
 
 export type AuthState = {
   session: unknown | null
@@ -112,6 +114,7 @@ const syncUser = async (authUser: NeonAuthUser) => {
 // Reads the current session in server components and maps it to a Prisma user.
 export const getServerSideAuth =
   async (): Promise<AuthState> => {
+    getNeonAuthConfig()
     const { session, user: authUser } = await neonAuth()
 
     if (!authUser) {

@@ -20,6 +20,23 @@ const isAuth = middleware(async ({ ctx, next }) => {
   })
 })
 
+// Restricts routes to admin users only.
+const isAdmin = middleware(async ({ ctx, next }) => {
+  const user = ctx.auth.user
+
+  if (!user || user.role !== 'ADMIN') {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      user,
+    },
+  })
+})
+
 export const router = t.router
 export const publicProcedure = t.procedure
 export const privateProcedure = t.procedure.use(isAuth)
+export const adminProcedure = privateProcedure.use(isAdmin)

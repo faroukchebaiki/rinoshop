@@ -1,21 +1,16 @@
 import { Request, Response } from 'express'
+import { getNeonAuthConfig } from '@/lib/auth/neon-config'
 
 // Proxies authentication requests to the Neon Auth server.
 export const authProxyHandler = async (
     req: Request,
     res: Response
 ) => {
-    const authUrl = process.env.NEON_AUTH_URL
-
-    if (!authUrl) {
-        return res
-            .status(500)
-            .json({ error: 'NEON_AUTH_URL is missing' })
-    }
+    const { baseUrl } = getNeonAuthConfig()
 
     const url = new URL(
         req.url.replace('/api/auth', ''),
-        authUrl.endsWith('/') ? authUrl : `${authUrl}/`
+        baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`
     )
 
     try {
@@ -23,7 +18,7 @@ export const authProxyHandler = async (
             method: req.method,
             headers: {
                 ...req.headers as any,
-                host: new URL(authUrl).host,
+                host: new URL(baseUrl).host,
             },
             body:
                 req.method !== 'GET' && req.method !== 'HEAD'
