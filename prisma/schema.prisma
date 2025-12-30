@@ -116,3 +116,9 @@ model OrderItem {
 
   @@index([orderId])
 }
+
+model StripeEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now())
+}

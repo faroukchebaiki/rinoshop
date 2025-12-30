@@ -3,6 +3,7 @@ import type Stripe from 'stripe'
 import { WebhookRequest } from './server/express-app'
 import { stripe } from './lib/stripe'
 import { prisma } from './lib/db'
+import { Prisma } from './generated/client'
 import { Resend } from 'resend'
 import { ReceiptEmailHtml } from './components/emails/ReceiptEmail'
 import { mapProductRecord, productSelect } from './lib/products'
@@ -12,6 +13,35 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy')
 type OrderMetadata = {
   userId: string
   orderId: string
+}
+
+const reserveStripeEvent = async (
+  event: Stripe.Event
+) => {
+  try {
+    await prisma.stripeEvent.create({
+      data: {
+        id: event.id,
+        type: event.type,
+      },
+    })
+    return true
+  } catch (error) {
+    if (
+      error instanceof
+        Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      return false
+    }
+    throw error
+  }
+}
+
+const releaseStripeEvent = async (eventId: string) => {
+  await prisma.stripeEvent
+    .delete({ where: { id: eventId } })
+    .catch(() => null)
 }
 
 // Extracts order identifiers from Stripe metadata.
@@ -116,100 +146,143 @@ export const stripeWebhookHandler = async (
     event.type === 'checkout.session.completed' ||
     event.type === 'checkout.session.async_payment_succeeded'
   ) {
-    const session = event.data
-      .object as Stripe.Checkout.Session
-    const metadata = readOrderMetadata(session.metadata ?? undefined)
+    const shouldProcess = await reserveStripeEvent(event)
 
-    if (!metadata) {
-      return res
-        .status(400)
-        .send(
-          'Webhook Error: Missing order metadata on session'
-        )
-    }
-
-    const { order, user } = await loadOrderWithUser(
-      metadata
-    )
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ error: 'No such user exists.' })
-    }
-
-    if (!order) {
-      return res
-        .status(404)
-        .json({ error: 'No such order exists.' })
-    }
-
-    const wasPaid = order.isPaid
-
-    if (!wasPaid) {
-      await setOrderPaidStatus(metadata.orderId, true)
-    }
-
-    if (wasPaid) {
+    if (!shouldProcess) {
       return res.status(200).send()
     }
 
-    const products = order.items.map((item) => ({
-      ...mapProductRecord(item.product),
-      price: item.price,
-    }))
-
-    // Send receipt email for successful payments.
     try {
-      const html = await ReceiptEmailHtml({
-        date: new Date(),
-        email: user.email,
-        orderId: metadata.orderId,
-        products,
-      })
+      const session = event.data
+        .object as Stripe.Checkout.Session
+      const metadata = readOrderMetadata(
+        session.metadata ?? undefined
+      )
 
-      const data = await resend.emails.send({
-        from: 'Rinoshop <hello@rinoshop.com>',
-        to: [user.email],
-        subject:
-          'Thanks for your order! This is your receipt.',
-        html,
-      })
-      return res.status(200).json({ data })
+      if (!metadata) {
+        await releaseStripeEvent(event.id)
+        return res
+          .status(400)
+          .send(
+            'Webhook Error: Missing order metadata on session'
+          )
+      }
+
+      const { order, user } = await loadOrderWithUser(
+        metadata
+      )
+
+      if (!user) {
+        await releaseStripeEvent(event.id)
+        return res
+          .status(404)
+          .json({ error: 'No such user exists.' })
+      }
+
+      if (!order) {
+        await releaseStripeEvent(event.id)
+        return res
+          .status(404)
+          .json({ error: 'No such order exists.' })
+      }
+
+      const wasPaid = order.isPaid
+
+      if (!wasPaid) {
+        await setOrderPaidStatus(metadata.orderId, true)
+      }
+
+      if (wasPaid) {
+        return res.status(200).send()
+      }
+
+      const products = order.items.map((item) => ({
+        ...mapProductRecord(item.product),
+        price: item.price,
+      }))
+
+      // Send receipt email for successful payments.
+      try {
+        const html = await ReceiptEmailHtml({
+          date: new Date(),
+          email: user.email,
+          orderId: metadata.orderId,
+          products,
+        })
+
+        const data = await resend.emails.send({
+          from: 'Rinoshop <hello@rinoshop.com>',
+          to: [user.email],
+          subject:
+            'Thanks for your order! This is your receipt.',
+          html,
+        })
+        return res.status(200).json({ data })
+      } catch (error) {
+        await releaseStripeEvent(event.id)
+        return res.status(500).json({ error })
+      }
     } catch (error) {
+      await releaseStripeEvent(event.id)
       return res.status(500).json({ error })
     }
   }
 
   if (event.type === 'checkout.session.async_payment_failed') {
-    const session = event.data
-      .object as Stripe.Checkout.Session
-    const metadata = readOrderMetadata(session.metadata ?? undefined)
+    const shouldProcess = await reserveStripeEvent(event)
 
-    if (metadata) {
-      const { order } = await loadOrderWithUser(metadata)
-
-      if (order) {
-        await setOrderPaidStatus(metadata.orderId, false)
-      }
+    if (!shouldProcess) {
+      return res.status(200).send()
     }
 
-    return res.status(200).send()
+    try {
+      const session = event.data
+        .object as Stripe.Checkout.Session
+      const metadata = readOrderMetadata(
+        session.metadata ?? undefined
+      )
+
+      if (metadata) {
+        const { order } = await loadOrderWithUser(metadata)
+
+        if (order) {
+          await setOrderPaidStatus(metadata.orderId, false)
+        }
+      }
+
+      return res.status(200).send()
+    } catch (error) {
+      await releaseStripeEvent(event.id)
+      return res.status(500).json({ error })
+    }
   }
 
   if (event.type === 'charge.refunded') {
     const charge = event.data.object as Stripe.Charge
     const metadata = await resolveMetadataFromCharge(charge)
 
-    if (metadata) {
+    if (!metadata) {
+      return res.status(200).send()
+    }
+
+    const shouldProcess = await reserveStripeEvent(event)
+
+    if (!shouldProcess) {
+      return res.status(200).send()
+    }
+
+    try {
       const { order } = await loadOrderWithUser(metadata)
 
       if (order) {
         await setOrderPaidStatus(metadata.orderId, false)
       }
-    }
 
-    return res.status(200).send()
+      return res.status(200).send()
+    } catch (error) {
+      await releaseStripeEvent(event.id)
+      return res.status(500).json({ error })
+    }
   }
 
   return res.status(200).send()

@@ -193,6 +193,12 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   price: 'price'
 };
 
+exports.Prisma.StripeEventScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -236,7 +242,8 @@ exports.Prisma.ModelName = {
   ProductFile: 'ProductFile',
   Media: 'Media',
   Order: 'Order',
-  OrderItem: 'OrderItem'
+  OrderItem: 'OrderItem',
+  StripeEvent: 'StripeEvent'
 };
 
 /**
