@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchNeonSession } from './lib/auth/neon-session'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { nextUrl } = req
 
   if (!['/sign-in', '/sign-up'].includes(nextUrl.pathname)) {

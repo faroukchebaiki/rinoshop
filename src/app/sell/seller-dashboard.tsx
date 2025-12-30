@@ -108,7 +108,7 @@ const SellerDashboard = ({
     })
 
   const categoryLabelMap = useMemo(() => {
-    return new Map(
+    return new Map<string, string>(
       PRODUCT_CATEGORIES.map((category) => [
         category.value,
         category.label,

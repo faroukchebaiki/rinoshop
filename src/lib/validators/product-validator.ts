@@ -14,15 +14,12 @@ export const ProductValidator = z.object({
     .string()
     .max(2000, 'Description is too long.')
     .optional(),
-  price: z.preprocess(
-    (value) => Number(value),
-    z
-      .number()
-      .min(1, 'Price must be at least $1.')
-      .max(100000, 'Price is too high.')
-  ),
+  price: z
+    .number()
+    .min(1, 'Price must be at least $1.')
+    .max(100000, 'Price is too high.'),
   category: z.enum(categoryValues, {
-    required_error: 'Select a category.',
+    message: 'Select a category.',
   }),
 })
 
