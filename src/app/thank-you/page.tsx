@@ -7,6 +7,7 @@ import PaymentStatus from '@/components/PaymentStatus'
 import { prisma } from '@/lib/db'
 import { mapProductRecord, productSelect } from '@/lib/products'
 import { getServerSideAuth } from '@/lib/auth'
+import { createDownloadToken } from '@/lib/download-tokens'
 
 interface PageProps {
   searchParams: {
@@ -112,7 +113,17 @@ const ThankYouPage = async ({
                       value === product.category
                   )?.label
 
-                  const downloadUrl = `/api/download/${product.id}`
+                  const downloadToken =
+                    order.isPaid && user
+                      ? createDownloadToken({
+                          userId: user.id,
+                          productId: product.id,
+                        })
+                      : null
+
+                  const downloadUrl = downloadToken
+                    ? `/api/download/${product.id}?token=${downloadToken}`
+                    : `/api/download/${product.id}`
                   const imageUrl = product.images[0]?.url
 
                   return (
