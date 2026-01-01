@@ -1,6 +1,0 @@
-
-> rinoshop@0.1.0 start /home/farouk/Documents/rinoshop
-> cross-env NODE_ENV=production node dist/server.cjs
-
-Next.js started
-Next.js App URL: http://localhost:3000
