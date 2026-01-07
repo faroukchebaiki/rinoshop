@@ -43,7 +43,7 @@ const Page = () => {
   const fee = 1
 
   return (
-    <div className='bg-white'>
+    <div className='bg-gradient-to-b from-gray-50 to-white min-h-screen'>
       <div className='mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8'>
         <h1 className='text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
           Shopping Cart
@@ -52,7 +52,7 @@ const Page = () => {
         <div className='mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16'>
           <div
             className={cn('lg:col-span-7', {
-              'rounded-lg border-2 border-dashed border-zinc-200 p-12':
+              'rounded-xl border-2 border-dashed border-zinc-200 p-12 bg-white':
                 isMounted && items.length === 0,
             })}>
             <h2 className='sr-only'>
@@ -96,15 +96,15 @@ const Page = () => {
                   return (
                     <li
                       key={product.id}
-                      className='flex py-6 sm:py-10'>
+                      className='flex py-6 sm:py-10 bg-white hover:bg-gray-50 transition-colors px-4 rounded-lg my-2'>
                       <div className='flex-shrink-0'>
-                        <div className='relative h-24 w-24'>
+                        <div className='relative h-24 w-24 sm:h-32 sm:w-32 rounded-lg overflow-hidden'>
                           {imageUrl ? (
                             <Image
                               fill
                               src={imageUrl}
                               alt='product image'
-                              className='h-full w-full rounded-md object-cover object-center sm:h-48 sm:w-48'
+                              className='h-full w-full object-cover object-center'
                             />
                           ) : null}
                         </div>
@@ -117,7 +117,7 @@ const Page = () => {
                               <h3 className='text-sm'>
                                 <Link
                                   href={`/product/${product.id}`}
-                                  className='font-medium text-gray-700 hover:text-gray-800'>
+                                  className='font-semibold text-gray-700 hover:text-blue-600 transition-colors'>
                                   {product.name}
                                 </Link>
                               </h3>
@@ -129,7 +129,7 @@ const Page = () => {
                               </p>
                             </div>
 
-                            <p className='mt-1 text-sm font-medium text-gray-900'>
+                            <p className='mt-1 text-sm font-semibold text-gray-900'>
                               {formatPrice(product.price)}
                             </p>
                           </div>
@@ -141,7 +141,8 @@ const Page = () => {
                                 onClick={() =>
                                   removeItem(product.id)
                                 }
-                                variant='ghost'>
+                                variant='ghost'
+                                className='hover:bg-red-50 hover:text-red-600 transition-colors'>
                                 <X
                                   className='h-5 w-5'
                                   aria-hidden='true'
@@ -165,8 +166,8 @@ const Page = () => {
             </ul>
           </div>
 
-          <section className='mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8'>
-            <h2 className='text-lg font-medium text-gray-900'>
+          <section className='mt-16 rounded-xl bg-white shadow-md px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8 border border-gray-100 sticky top-20'>
+            <h2 className='text-lg font-semibold text-gray-900'>
               Order summary
             </h2>
 
@@ -198,10 +199,10 @@ const Page = () => {
               </div>
 
               <div className='flex items-center justify-between border-t border-gray-200 pt-4'>
-                <div className='text-base font-medium text-gray-900'>
+                <div className='text-base font-semibold text-gray-900'>
                   Order Total
                 </div>
-                <div className='text-base font-medium text-gray-900'>
+                <div className='text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent'>
                   {isMounted ? (
                     formatPrice(cartTotal + fee)
                   ) : (
@@ -217,7 +218,7 @@ const Page = () => {
                 onClick={() =>
                   createCheckoutSession({ productIds })
                 }
-                className='w-full'
+                className='w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 shadow-lg hover:shadow-xl transition-all'
                 size='lg'>
                 {isPending ? (
                   <Loader2 className='w-4 h-4 animate-spin mr-1.5' />
