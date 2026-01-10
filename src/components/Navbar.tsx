@@ -12,8 +12,8 @@ const Navbar = async () => {
   const { user } = await getServerSideAuth()
 
   return (
-    <div className='bg-white sticky z-50 top-0 inset-x-0 h-16 border-b border-gray-200 shadow-sm'>
-      <header className='relative bg-white'>
+    <div className='sticky z-50 top-0 inset-x-0 h-16'>
+      <header className='relative bg-white/80 backdrop-blur-md border-b border-gray-200/50 transition-all'>
         <MaxWidthWrapper>
           <div className='flex h-16 items-center'>
             <MobileNav />

@@ -36,30 +36,29 @@ export default function Home() {
   return (
     <>
       <MaxWidthWrapper>
-        <div className='py-20 mx-auto text-center flex flex-col items-center max-w-3xl'>
-          <h1 className='text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl'>
+        <div className='py-20 mx-auto text-center flex flex-col items-center max-w-3xl relative'>
+          <div className="absolute -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 pointer-events-none opacity-40">
+            <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+              style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}>
+            </div>
+          </div>
+
+          <h1 className='text-4xl font-heading font-bold tracking-tight text-gray-900 sm:text-6xl animate-in fade-in slide-in-from-bottom-8 duration-700'>
             Your marketplace for high-quality{' '}
-            <span
-              className='bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent'
-              style={{
-                backgroundImage: 'linear-gradient(to right, #2563eb, #60a5fa)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
+            <span className='text-primary'>
               digital assets
             </span>
             .
           </h1>
-          <p className='mt-6 text-lg max-w-prose text-muted-foreground leading-relaxed'>
+          <p className='mt-6 text-lg max-w-prose text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both'>
             Welcome to Rinoshop. Every asset on our
             platform is verified by our team to ensure our
             highest quality standards.
           </p>
-          <div className='flex flex-col sm:flex-row gap-4 mt-8'>
+          <div className='flex flex-col sm:flex-row gap-4 mt-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both'>
             <Link
               href='/products'
-              className={buttonVariants({ size: 'lg' })}>
+              className={buttonVariants({ size: 'lg', className: "shadow-lg hover:shadow-xl transition-all" })}>
               Browse Trending
             </Link>
             <Button variant='ghost' size='lg'>
